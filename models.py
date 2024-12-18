@@ -12,10 +12,14 @@ class Client:
         self.cur.execute("""CREATE TABLE IF NOT EXISTS client (
             client_name TEXT PRIMARY KEY,
             notes TEXT,
-            created_at DATE)""")
+            updated_at DATE)""")
 
     def read_all(self):
         self.cur.execute("""SELECT * FROM client""")
+        return self.cur.fetchall()
+
+    def read(self, name):
+        self.cur.execute("""SELECT * FROM client WHERE client_name = ?""", (name,))
         return self.cur.fetchall()
 
     def insert(self, data):
@@ -23,8 +27,10 @@ class Client:
                          data + (datetime.today().strftime('%y%m%d%H%M%S'),))
         self.con.commit()
 
-    def update(self):
-        pass
+    def update(self, name, data):
+        self.cur.execute("""UPDATE client SET notes = ?, updated_at = ? WHERE client_name = ? """,
+                         (data,) + (datetime.today().strftime('%y%m%d%H%M%S'), name))
+        self.con.commit()
 
     def delete(self, name):
         self.cur.execute("""DELETE FROM client WHERE client_name = ? """, (name,))
