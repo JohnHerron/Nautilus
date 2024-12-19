@@ -4,11 +4,11 @@ from datetime import datetime
 
 class Client:
     def __init__(self):
-        self.con = sqlite3.connect("client.db")
+        self.con = sqlite3.connect("nautilus.db")
         self.cur = self.con.cursor()
+        self.cur.execute('PRAGMA foreign_keys = ON')
         self.create_table()
 
-# TODO: Remove connections when client is deleted
     def create_table(self):
         self.cur.execute("""CREATE TABLE IF NOT EXISTS client (
             client_name TEXT PRIMARY KEY,
@@ -41,8 +41,9 @@ class Client:
 
 class Connection:
     def __init__(self):
-        self.con = sqlite3.connect("connection.db")
+        self.con = sqlite3.connect("nautilus.db")
         self.cur = self.con.cursor()
+        self.cur.execute('PRAGMA foreign_keys = ON')
         self.create_table()
 
     def create_table(self):
@@ -52,7 +53,10 @@ class Connection:
             client_name TEXT,
             notes TEXT,
             updated_at DATE,
-            FOREIGN KEY (client_name) REFERENCES client (client_name)
+            FOREIGN KEY (client_name) 
+                REFERENCES client (client_name)
+                ON DELETE CASCADE
+                ON UPDATE CASCADE
         )""")
 
     def read_all(self):
